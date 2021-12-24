@@ -184,13 +184,18 @@ public:
 class TrieNode
 {
     List<char, TrieNode> children;
+    List<int, TrieNode>* labels;
 public:
+    TrieNode(){
+        labels=new List<int,TrieNode>;
+    }
     void insert(char* suffix, int index)
     {
         if(suffix[index] == '\0')
         {
             return;
         }
+        labels->push_back(index);
         List<char, TrieNode>::Node* targetLLNode = children.search(suffix[index]);
         if(targetLLNode == NULL)
         {
@@ -226,6 +231,32 @@ public:
         }
         it.getCurrent()->child->print(0);
     }
+
+
+    List<int,TrieNode>* suffixSearch(char* suffix){
+        int size=0;
+        for (int i = 0; suffix[i] != '\0'; ++i)
+        {
+            size++;
+        }
+        if(size==0){
+            return labels;
+        }
+        List<char, TrieNode>::Node* targetLLNode = children.search(suffix[0]);
+        if(targetLLNode != NULL){
+            return targetLLNode->child->suffixSearch(substr(suffix,1,size));
+        }
+        else
+            return NULL;
+    }
+
+    char* substr(char* arr, int begin, int len) {
+        char* res = new char[len];
+        for (int i = 0; i <= len; i++)
+            res[i] = *(arr + begin + i);
+        return res;
+    }
+
 };
 
 class SuffixTrie
@@ -254,15 +285,35 @@ public:
     {
         root->print(i);
     }
+
+    void Search(char* word){
+        int size=0;
+        for (int i = 0; word[i] != '\0'; ++i)
+        {
+            size++;
+        }
+        List<int, TrieNode> *result = root->suffixSearch(word);
+        if (result == NULL)
+            cout << "Not found" << endl;
+        else
+        {
+            List<int, TrieNode>::iterator i;
+            for (i = result->begin(); i != result->end(); ++i)
+                cout << *i - size << " ";
+            cout<<endl;
+        }
+    }
 };
 
-int main() {
-    SuffixTrie t("banana$");
-    t.print(0);
-//    cout<<(*rootChildren->begin().getCurrent()->child->getChildren()->begin());
-//    for(char i : *rootChildren)
-//    {
-//        cout<<(i);
-//    }
+int main()
+{
+    // Construct a suffix trie containing all suffixes of "bananabanaba$"
+
+    //            0123456789012
+    SuffixTrie t("bananabanaba$");
+
+    t.Search("ana"); // Prints: 1 3 7
+    t.Search("naba"); // Prints: 4 8
+
     return 0;
 }
