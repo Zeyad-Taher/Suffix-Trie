@@ -191,11 +191,11 @@ public:
     }
     void insert(char* suffix, int index)
     {
+        labels->push_back(index);
         if(suffix[index] == '\0')
         {
             return;
         }
-        labels->push_back(index);
         List<char, TrieNode>::Node* targetLLNode = children.search(suffix[index]);
         if(targetLLNode == NULL)
         {
